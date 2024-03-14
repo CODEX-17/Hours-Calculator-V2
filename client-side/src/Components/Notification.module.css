@@ -1,0 +1,64 @@
+@font-face {
+    font-family: bold;
+    src: url('../assets/fonts/Montserrat-Bold.ttf');
+  }
+  
+  @font-face {
+    font-family: normal;
+    src: url('../assets/fonts/Montserrat-Regular.ttf');
+  }
+
+
+.container {
+    width: 300px;
+    height: auto;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 2%;
+    gap: 5%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: pop 0.5s ease;
+}
+
+img {
+    margin: 0;
+}
+
+#closed {
+    cursor: pointer;
+}
+
+#closed:hover {
+    transform: scale(110%);
+}
+
+#message {
+    font-family: bold;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+}
+
+@keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes pop {
+    from {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }

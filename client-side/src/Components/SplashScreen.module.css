@@ -1,0 +1,63 @@
+  @font-face {
+    font-family: bubble;
+    src: url('../assets/fonts/BubblegumSans-Regular.ttf');
+  }
+  
+  @font-face {
+    font-family: midi;
+    src: url('../assets/fonts/MadimiOne-Regular.ttf');
+  }
+
+  @font-face {
+    font-family: normal;
+    src: url('../assets/fonts/Montserrat-Regular.ttf');
+  }
+
+.container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #312e2e;
+}
+
+img {
+    width: 10%;
+    margin-bottom: 20px;
+    animation: fade 1s ease-in-out;
+}
+
+h2 {
+    font-size: 20pt;
+    font-family: midi;
+    margin: 0;
+    animation: pop 0.5s ease-in-out;
+}
+
+p {
+    font-size: 8pt;
+    font-family: normal;
+    animation: pop 0.5s 1s ease-in-out;
+}
+
+@keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes pop {
+    from {
+      transform: scale(0.5);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
