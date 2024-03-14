@@ -12,8 +12,8 @@ router.get('/getHoursById/:acct_id', (req, res) => {
         } else {
             return res.status(200).json(data);
         }
-    });
-});
+    })
+})
 
 router.post('/addHours', (req, res) => {
     const acct_id = req.body.acct_id;
@@ -34,5 +34,25 @@ router.post('/addHours', (req, res) => {
 
 })
 
+router.post('/updateHours', (req, res) => {
+    const value = req.body
+
+    console.log(value)
+    const acct_id = value.acct_id;
+    const date = value.date;
+    const morning_start = value.morning_start
+    const morning_end = value.morning_end
+    const afternoon_start = value.afternoon_start
+    const afternoon_end = value.afternoon_end
+    const query = 'UPDATE hours SET date=?, morning_start=?, morning_end=?, afternoon_start=?, afternoon_end=? WHERE acct_id=?'
+
+    db.query(query, [acct_id, date, morning_start, morning_end, afternoon_start, afternoon_end], (error, data, fields) => {
+        if (error) {
+            return res.status(404).send(error)
+        }else {
+            return res.status(200).json({ message: "Successfully update hours info." })
+        }
+    })
+})
 
 module.exports = router;
