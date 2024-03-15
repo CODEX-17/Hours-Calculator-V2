@@ -22,10 +22,10 @@ const Mainpage = () => {
   const { updateNotification, updateMessage, updateGood } = stateStores()
  
   const [date, setDate] = useState(null)
-  const [morningTimeStart, setmorningTimeStart] = useState('0:0')
-  const [morningTimeEnd, setmorningTimeEnd] = useState('0:0')
-  const [afternoonTimeStart, setafternoonTimeStart] = useState('0:0')
-  const [afternoonTimeEnd, setafternoonTimeEnd] = useState('0:0')
+  const [morningTimeStart, setmorningTimeStart] = useState('08:00')
+  const [morningTimeEnd, setmorningTimeEnd] = useState('12:00')
+  const [afternoonTimeStart, setafternoonTimeStart] = useState('13:00')
+  const [afternoonTimeEnd, setafternoonTimeEnd] = useState('17:00')
   const [hoursList, setHoursList] = useState([])
 
   const [editdate, seteditDate] = useState(null)
@@ -52,7 +52,6 @@ const Mainpage = () => {
   },[])
 
   useEffect( () => {
-    console.log('in')
    generateAllHoursList()
   },[hoursList])
 
@@ -88,6 +87,7 @@ const Mainpage = () => {
         updateGood(true)
         updateNotification(true)
         generateAllHoursList()
+        setisShowAddTime(false)
     })
     .catch((err) => console.log(err))
 
@@ -208,26 +208,26 @@ const Mainpage = () => {
                                     <div className={style.calculatedHours}>Calculated Hours : {dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)}</div>
                                     <div className='d-flex flex-column'>
                                         <label>DATE</label>
-                                        <input type='date' onChange={(e) => setDate(e.target.value)}/>
+                                        <input type='date' value={date} onChange={(e) => setDate(e.target.value)}/>
                                     </div>
                                     <div className='d-flex w-100 gap-5 mt-2 justify-content-between'>
                                         <div className='d-flex flex-column w-50'>
                                             <label>MORNING TIME START</label>
-                                            <input type='time'  onChange={(e) => setmorningTimeStart(e.target.value)}/>
+                                            <input type='time' value={morningTimeStart} onChange={(e) => setmorningTimeStart(e.target.value)}/>
                                         </div>
                                         <div className='d-flex flex-column w-50'>
                                             <label>MORNING TIME END</label>
-                                            <input type='time' onChange={(e) => setmorningTimeEnd(e.target.value)}/>
+                                            <input type='time' value={morningTimeEnd} onChange={(e) => setmorningTimeEnd(e.target.value)}/>
                                         </div>
                                     </div>
                                     <div className='d-flex mt-2 w-100 gap-5 justify-content-between'>
                                         <div className='d-flex flex-column w-50'>
                                             <label>AFTERNOON TIME START</label>
-                                            <input type='time' onChange={(e) => setafternoonTimeStart(e.target.value)}/>
+                                            <input type='time' value={afternoonTimeStart} onChange={(e) => setafternoonTimeStart(e.target.value)}/>
                                         </div>
                                         <div className='d-flex flex-column w-50'>
                                             <label>AFTERNOON TIME END</label>
-                                            <input type='time' onChange={(e) => setafternoonTimeEnd(e.target.value)}/>
+                                            <input type='time' value={afternoonTimeEnd} onChange={(e) => setafternoonTimeEnd(e.target.value)}/>
                                         </div>
                                     </div>
 
