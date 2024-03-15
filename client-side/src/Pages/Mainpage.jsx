@@ -51,6 +51,11 @@ const Mainpage = () => {
 
   },[])
 
+  useEffect( () => {
+    console.log('in')
+   generateAllHoursList()
+  },[hoursList])
+
   const handleAddTime = (e) => {
     e.preventDefault()
 
@@ -82,6 +87,7 @@ const Mainpage = () => {
         updateMessage(message)
         updateGood(true)
         updateNotification(true)
+        generateAllHoursList()
     })
     .catch((err) => console.log(err))
 
@@ -90,24 +96,43 @@ const Mainpage = () => {
   const generateAllHoursList = () => {
     let timeList = []
 
-    for (let i = 0; i < hoursList.length; i++) {
-        const morningTimeStart = hoursList[i].morning_start
-        const morningTimeEnd = hoursList[i].morning_end
-        const afternoonTimeStart = hoursList[i].afternoon_start
-        const afternoonTimeEnd = hoursList[i].afternoon_end
+    if (hoursList.length > 0) {
+        for (let i = 0; i < hoursList.length; i++) {
+            const morningTimeStart = hoursList[i].morning_start
+            const morningTimeEnd = hoursList[i].morning_end
+            const afternoonTimeStart = hoursList[i].afternoon_start
+            const afternoonTimeEnd = hoursList[i].afternoon_end
 
-        timeList.push(dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd))   
-    }
+            if (morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd) {
+                timeList.push(dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)) 
+            }
+        }
 
-    const result = totalHoursComputation(timeList)
-    const [hours, minutes] = result.split(':')
+        const result = totalHoursComputation(timeList)
+        const [hours, minutes] = result.split(':')
 
-    if (parseInt(hours) === 0) {
-        return minutes + 'mins'
+        if (parseInt(hours) === 0) {
+            return minutes + 'mins'
+        }else {
+            return hours + 'hrs and ' + minutes + 'mins'
+        }
     }else {
-        return hours + 'hrs and ' + minutes + 'mins'
+        return '0:0'
     }
 
+  }
+
+  const generateTodaysHours = () => {
+    const dateNow = new Date()
+
+    console.log(dateNow, date)
+
+    if (date === dateNow) {
+        return dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)
+    }else {
+        return '0:0'
+    }
+    
   }
 
   const handleEditTime = (index) => {
@@ -272,22 +297,22 @@ const Mainpage = () => {
                                 <div className='d-flex gap-4 align-items-center'>
                                     <div className='d-flex flex-column align-items-center'>
                                         <p>MORNING START</p>
-                                        <h1 id={style.time}>{convertTimeFormat(data.morning_start)}</h1>
+                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.morning_start)}</h1>
                                     </div>
                                     <FaArrowsAltH/>
                                     <div className='d-flex flex-column align-items-center'>
                                         <p>MORNING END</p>
-                                        <h1 id={style.time}>{convertTimeFormat(data.morning_end)}</h1>
+                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.morning_end)}</h1>
                                     </div>
                                     <FaGripLinesVertical/>
                                     <div className='d-flex flex-column align-items-center'>
                                         <p>AFTERNOON START</p>
-                                        <h1 id={style.time}>{convertTimeFormat(data.afternoon_start)}</h1>
+                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.afternoon_start)}</h1>
                                     </div>
                                     <FaArrowsAltH/>
                                     <div className='d-flex flex-column align-items-center'>
                                         <p>AFTERNOON END</p>
-                                        <h1 id={style.time}>{convertTimeFormat(data.afternoon_end)}</h1>
+                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.afternoon_end)}</h1>
                                     </div>
                                 </div>
                                 <div className='d-flex gap-2 align-items-center' style={{ marginRight: '20px' }}>
@@ -317,7 +342,7 @@ const Mainpage = () => {
                             <p>TODAY'S HOURS</p>
                             <p style={{ fontSize: '8pt' }}>{formatDate(Date.now())}</p>
                         </div>
-                        <h1>{dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)}</h1>
+                        <h1>{generateTodaysHours()}</h1>
                     </div>
                     <div className='d-flex flex-column align-items-center'>
                         <p>TOTAL WEEK HOURS</p>
