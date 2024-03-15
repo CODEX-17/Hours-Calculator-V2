@@ -3,7 +3,7 @@ import style from './Homepage.module.css'
 import SplashScreen from '../Components/SplashScreen'
 import { MdOutlineExitToApp } from "react-icons/md";
 import { useNavigate } from 'react-router-dom';
-import Notification from '../Components/Notification';
+import  Notification from '../Components/Notification';
 import stateStores from '../Stores/statesStores';
 import {Howl, Howler} from 'howler';
 import axios from 'axios';

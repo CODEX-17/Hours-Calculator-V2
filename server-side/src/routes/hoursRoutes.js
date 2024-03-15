@@ -55,4 +55,18 @@ router.post('/updateHours', (req, res) => {
     })
 })
 
+router.delete('/deleteHours/:id', (req, res) => {
+    const id = req.params.id
+    const query = 'DELETE FROM hours WHERE id=?'
+
+    db.query(query, [id], (error, data, fields) => {
+        if (error) {
+            return res.status(404).send(error)
+        }else {
+            return res.status(200).json({ message: "Successfully deleted hours info." })
+        }
+    })
+})
+
+
 module.exports = router;

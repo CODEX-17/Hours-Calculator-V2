@@ -12,6 +12,7 @@ import axios from 'axios';
 import totalHoursComputation from '../util/totalHoursComputation';
 import stateStores from '../Stores/statesStores';
 import convertTimeFormat from '../util/convertTimeFormat';
+import  Notification from '../Components/Notification';
 
 
 const Mainpage = () => {
@@ -19,7 +20,7 @@ const Mainpage = () => {
   const [isShowAddTime, setisShowAddTime] = useState(false)
   const [isShowEditTime, setisShowEditTime] = useState(false)
   const navigate = useNavigate()
-  const { updateNotification, updateMessage, updateGood } = stateStores()
+  const { updateNotification, updateMessage, updateGood, notification } = stateStores()
  
   const [date, setDate] = useState(null)
   const [morningTimeStart, setmorningTimeStart] = useState('08:00')
@@ -54,6 +55,29 @@ const Mainpage = () => {
   useEffect( () => {
    generateAllHoursList()
   },[hoursList])
+
+
+  const handleDeleteHours = (id) => {
+    
+    const deleteHoursInAList = (id) => {
+        const filter = hoursList.filter((data) => data.id !== id)
+        setHoursList(filter)
+    }
+
+    if (id) {
+        axios.delete('http://localhost:5000/hours/deleteHours/' + id)
+        .then((res) => res.data)
+        .then((data) => {
+            deleteHoursInAList(id)
+            const message = data.message
+            updateMessage(message)
+            updateGood(true)
+            updateNotification(true)
+            setisShowAddTime(false)
+        })
+        .catch((err) => console.log(err))
+    }
+  }
 
   const handleAddTime = (e) => {
     e.preventDefault()
@@ -179,6 +203,13 @@ const Mainpage = () => {
 
   return (
     <div className={style.container}>
+        {
+            notification && (
+                <div className={style.notification}>
+                    <Notification/>
+                </div>
+            )
+        }
         <div className={style.left}>
             <div className={style.head}>
                 <div className='d-flex gap-2 align-items-center'>
@@ -286,47 +317,48 @@ const Mainpage = () => {
                         </div>
                     )
                 }
-                {
-                    hoursList.length > 0 ? (
-                        hoursList.map((data, index) => (
-                            <div className={style.card} key={index}>
-                                <div className='d-flex flex-column align-items-start' style={{ marginLeft: '20px' }}>
-                                    <p>DATE</p>
-                                    <h1>{formatDate(data.date)}</h1>
+                <div className={style.listView}>
+                    {
+                        hoursList.length > 0 ? (
+                            hoursList.map((data, index) => (
+                                <div className={style.card} key={index}>
+                                    <div className='d-flex flex-column align-items-start' style={{ marginLeft: '20px' }}>
+                                        <p>DATE</p>
+                                        <h1>{formatDate(data.date)}</h1>
+                                    </div>
+                                    <div className='d-flex gap-4 align-items-center'>
+                                        <div className='d-flex flex-column align-items-center'>
+                                            <p>MORNING START</p>
+                                            <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.morning_start)}</h1>
+                                        </div>
+                                        <FaArrowsAltH/>
+                                        <div className='d-flex flex-column align-items-center'>
+                                            <p>MORNING END</p>
+                                            <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.morning_end)}</h1>
+                                        </div>
+                                        <FaGripLinesVertical/>
+                                        <div className='d-flex flex-column align-items-center'>
+                                            <p>AFTERNOON START</p>
+                                            <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.afternoon_start)}</h1>
+                                        </div>
+                                        <FaArrowsAltH/>
+                                        <div className='d-flex flex-column align-items-center'>
+                                            <p>AFTERNOON END</p>
+                                            <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.afternoon_end)}</h1>
+                                        </div>
+                                    </div>
+                                    <div className='d-flex gap-2 align-items-center' style={{ marginRight: '20px' }}>
+                                        <FaRegEdit size={20} cursor={'pointer'} title='edit' onClick={() => handleEditTime(index)}/>
+                                        <MdOutlineDelete size={22} cursor={'pointer'} title='delete' onClick={() => handleDeleteHours(data.id)}/>
+                                    </div>
                                 </div>
-                                <div className='d-flex gap-4 align-items-center'>
-                                    <div className='d-flex flex-column align-items-center'>
-                                        <p>MORNING START</p>
-                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.morning_start)}</h1>
-                                    </div>
-                                    <FaArrowsAltH/>
-                                    <div className='d-flex flex-column align-items-center'>
-                                        <p>MORNING END</p>
-                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.morning_end)}</h1>
-                                    </div>
-                                    <FaGripLinesVertical/>
-                                    <div className='d-flex flex-column align-items-center'>
-                                        <p>AFTERNOON START</p>
-                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.afternoon_start)}</h1>
-                                    </div>
-                                    <FaArrowsAltH/>
-                                    <div className='d-flex flex-column align-items-center'>
-                                        <p>AFTERNOON END</p>
-                                        <h1 id={style.time}>{data.morning_start && convertTimeFormat(data.afternoon_end)}</h1>
-                                    </div>
-                                </div>
-                                <div className='d-flex gap-2 align-items-center' style={{ marginRight: '20px' }}>
-                                    <FaRegEdit size={20} cursor={'pointer'} title='edit' onClick={() => handleEditTime(index)}/>
-                                    <MdOutlineDelete size={22} cursor={'pointer'} title='delete'/>
-                                </div>
-                            </div>
-                        ))
-                    ): (
-                        <p>No data.</p>
-                    )
-                        
-                }
-                
+                            ))
+                        ): (
+                            <p>No data.</p>
+                        )
+                            
+                    }
+                </div>
                 
             </div>
         </div>
