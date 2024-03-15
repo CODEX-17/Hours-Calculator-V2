@@ -82,16 +82,6 @@ const Mainpage = () => {
   const handleAddTime = (e) => {
     e.preventDefault()
 
-    setHoursList(
-        [...hoursList, {
-          date: date,
-          morningTimeStart: morningTimeStart,
-          morningTimeEnd: morningTimeEnd,
-          afternoonTimeStart: afternoonTimeStart,
-          afternoonTimeEnd: afternoonTimeEnd
-        }]
-    )
-
     const data = {
           acct_id: user.acct_id,
           date,
@@ -101,7 +91,7 @@ const Mainpage = () => {
           afternoon_end: afternoonTimeEnd,
     }
 
-    console.log('data', data)
+    setHoursList([...hoursList, data])
 
     axios.post('http://localhost:5000/hours/addHours', data)
     .then((res) => res.data)
@@ -187,8 +177,6 @@ const Mainpage = () => {
             afternoon_start: editafternoonTimeStart,
             afternoon_end: editafternoonTimeEnd,
         }
-
-        console.log(data)
 
         axios.post('http://localhost:5000/hours/updateHours', data)
         .then((res) => res.data)
