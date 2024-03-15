@@ -13,6 +13,7 @@ import totalHoursComputation from '../util/totalHoursComputation';
 import stateStores from '../Stores/statesStores';
 import convertTimeFormat from '../util/convertTimeFormat';
 import  Notification from '../Components/Notification';
+import convertTimeToRead from '../util/convertTimeToRead';
 
 
 const Mainpage = () => {
@@ -107,6 +108,7 @@ const Mainpage = () => {
 
   }
 
+
   const generateAllHoursList = () => {
     let timeList = []
 
@@ -138,30 +140,35 @@ const Mainpage = () => {
 
   const generateTodaysHours = () => {
     const dateNow = new Date()
+    const formattedDate = dateNow.toISOString().split('T')[0]
+   
+    if (hoursList) {
+        for (let i = 0; i < hoursList.length; i++) {
+            if (hoursList[i].date === formattedDate) {
+                const morningTimeStart = hoursList[i].morning_start
+                const morningTimeEnd = hoursList[i].morning_end
+                const afternoonTimeStart = hoursList[i].afternoon_start
+                const afternoonTimeEnd = hoursList[i].afternoon_end
 
-    console.log(dateNow, date)
-
-    if (date === dateNow) {
-        return dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)
+                const data = dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)
+                return convertTimeToRead(data)
+            }
+        }
     }else {
         return '0:0'
     }
     
   }
 
-  const handleEditTime = (index) => {
+  const handleEditTime = (id) => {
     if (hoursList) {
-        const data = hoursList[index]
-        console.log(data)
-
-        seteditDate(data.date)
-        seteditmorningTimeStart(data.morning_start)
-        seteditmorningTimeEnd(data.morning_end)
-        seteditafternoonTimeStart(data.afternoon_start)
-        seteditafternoonTimeEnd(data.afternoon_end)
+        const data = hoursList.filter((data) => data.id === id)
+        seteditDate(data[0].date)
+        seteditmorningTimeStart(data[0].morning_start)
+        seteditmorningTimeEnd(data[0].morning_end)
+        seteditafternoonTimeStart(data[0].afternoon_start)
+        seteditafternoonTimeEnd(data[0].afternoon_end)
         setisShowEditTime(true)
-
-        
     }
   }
 
@@ -336,7 +343,7 @@ const Mainpage = () => {
                                         </div>
                                     </div>
                                     <div className='d-flex gap-2 align-items-center' style={{ marginRight: '20px' }}>
-                                        <FaRegEdit size={20} cursor={'pointer'} title='edit' onClick={() => handleEditTime(index)}/>
+                                        <FaRegEdit size={20} cursor={'pointer'} title='edit' onClick={() => handleEditTime(data.id)}/>
                                         <MdOutlineDelete size={22} cursor={'pointer'} title='delete' onClick={() => handleDeleteHours(data.id)}/>
                                     </div>
                                 </div>
