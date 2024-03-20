@@ -14,30 +14,31 @@ import stateStores from '../Stores/statesStores';
 import convertTimeFormat from '../util/convertTimeFormat';
 import  Notification from '../Components/Notification';
 import convertTimeToRead from '../util/convertTimeToRead';
+import DeleteNotification from '../Components/DeleteNotification';
 
 
 const Mainpage = () => {
 
   const [isShowAddTime, setisShowAddTime] = useState(false)
   const [isShowEditTime, setisShowEditTime] = useState(false)
+  const [isShowDeleteNotification, setisShowDeleteNotification] = useState(false)
   const navigate = useNavigate()
-  const { updateNotification, updateMessage, updateGood, notification } = stateStores()
- 
-  const [date, setDate] = useState(null)
+  const { updateNotification, updateMessage, updateGood, notification, updateSelectedID, selectedID } = stateStores()
+  const currentDate = new Date().toISOString().split('T')[0]
+
+  const [date, setDate] = useState(currentDate)
   const [morningTimeStart, setmorningTimeStart] = useState('08:00')
   const [morningTimeEnd, setmorningTimeEnd] = useState('12:00')
   const [afternoonTimeStart, setafternoonTimeStart] = useState('13:00')
   const [afternoonTimeEnd, setafternoonTimeEnd] = useState('17:00')
   const [hoursList, setHoursList] = useState([])
 
+  const [editID, setEditID] = useState(null)
   const [editdate, seteditDate] = useState(null)
   const [editmorningTimeStart, seteditmorningTimeStart] = useState('0:0')
   const [editmorningTimeEnd, seteditmorningTimeEnd] = useState('0:0')
   const [editafternoonTimeStart, seteditafternoonTimeStart] = useState('0:0')
   const [editafternoonTimeEnd, seteditafternoonTimeEnd] = useState('0:0')
-  
-
-  const [overAllHours, setOverAllHours] = useState()
 
   
   const user = JSON.parse(localStorage.getItem('user'))
@@ -58,26 +59,37 @@ const Mainpage = () => {
   },[hoursList])
 
 
-  const handleDeleteHours = (id) => {
-    
-    const deleteHoursInAList = (id) => {
-        const filter = hoursList.filter((data) => data.id !== id)
-        setHoursList(filter)
-    }
+  const deleteHours = (state) => {
+   
+    if (state) {
+        const deleteHoursInAList = (id) => {
+            const filter = hoursList.filter((data) => data.id !== id)
+            setHoursList(filter)
+        }
+            if (selectedID) {
+                const id = selectedID
+                axios.delete('http://localhost:5000/hours/deleteHours/' + id)
+                .then((res) => res.data)
+                .then((data) => {
+                    deleteHoursInAList(id)
+                    const message = data.message
+                    updateMessage(message)
+                    updateGood(true)
+                    updateNotification(true)
+                    setisShowDeleteNotification(false)
+                })
+                .catch((err) => console.log(err))
+            }  
 
-    if (id) {
-        axios.delete('http://localhost:5000/hours/deleteHours/' + id)
-        .then((res) => res.data)
-        .then((data) => {
-            deleteHoursInAList(id)
-            const message = data.message
-            updateMessage(message)
-            updateGood(true)
-            updateNotification(true)
-            setisShowAddTime(false)
-        })
-        .catch((err) => console.log(err))
-    }
+            
+        }
+
+
+  }
+
+  const handleDeleteHours = (id) => {
+    setisShowDeleteNotification(true)
+    updateSelectedID(id)
   }
 
   const handleAddTime = (e) => {
@@ -163,6 +175,7 @@ const Mainpage = () => {
   const handleEditTime = (id) => {
     if (hoursList) {
         const data = hoursList.filter((data) => data.id === id)
+        setEditID(data[0].id)
         seteditDate(data[0].date)
         seteditmorningTimeStart(data[0].morning_start)
         seteditmorningTimeEnd(data[0].morning_end)
@@ -175,9 +188,8 @@ const Mainpage = () => {
   const handleSubmitEdit = (e) => {
         e.preventDefault()
 
-        
         const data = {
-            acct_id: user.acct_id,
+            id: editID,
             date: editdate,
             morning_start: editmorningTimeStart,
             morning_end: editmorningTimeEnd,
@@ -185,15 +197,37 @@ const Mainpage = () => {
             afternoon_end: editafternoonTimeEnd,
         }
 
+        const updateDataInVariable = () => {
+
+            let newData = hoursList
+
+            for (let i = 0; i < newData.length; i++) {
+               if (newData[i].id === editID) {
+                 newData[i].date = editdate
+                 newData[i].morning_start = editmorningTimeStart
+                 newData[i].morning_end = editmorningTimeEnd
+                 newData[i].afternoon_start = editafternoonTimeStart
+                 newData[i].afternoon_end = editafternoonTimeEnd
+               }
+            }
+
+            setHoursList(newData)
+        }
+
         axios.post('http://localhost:5000/hours/updateHours', data)
         .then((res) => res.data)
         .then((data) => {
+            updateDataInVariable()
             const message = data.message
             updateMessage(message)
             updateGood(true)
             updateNotification(true)
+            setisShowEditTime(false)
         })
         .catch((err) => console.log(err))
+
+        
+
   }
 
   return (
@@ -205,6 +239,15 @@ const Mainpage = () => {
                 </div>
             )
         }
+
+        {
+            isShowDeleteNotification && (
+                <div className={style.deleteNotification}>
+                    <DeleteNotification deleteHours={deleteHours}/>
+                </div>
+            )
+        }
+
         <div className={style.left}>
             <div className={style.head}>
                 <div className='d-flex gap-2 align-items-center'>

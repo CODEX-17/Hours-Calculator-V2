@@ -37,16 +37,15 @@ router.post('/addHours', (req, res) => {
 router.post('/updateHours', (req, res) => {
     const value = req.body
 
-    console.log(value)
-    const acct_id = value.acct_id;
-    const date = value.date;
+    const id = value.id
+    const date = value.date
     const morning_start = value.morning_start
     const morning_end = value.morning_end
     const afternoon_start = value.afternoon_start
     const afternoon_end = value.afternoon_end
-    const query = 'UPDATE hours SET date=?, morning_start=?, morning_end=?, afternoon_start=?, afternoon_end=? WHERE acct_id=?'
+    const query = 'UPDATE hours SET date=?, morning_start=?, morning_end=?, afternoon_start=?, afternoon_end=? WHERE id=?'
 
-    db.query(query, [date, morning_start, morning_end, afternoon_start, afternoon_end, acct_id], (error, data, fields) => {
+    db.query(query, [date, morning_start, morning_end, afternoon_start, afternoon_end, id], (error, data, fields) => {
         if (error) {
             return res.status(404).send(error)
         }else {
