@@ -46,7 +46,7 @@ const Mainpage = () => {
   useEffect(() => {
 
     const acct_id = user.acct_id
-    axios.get('http://localhost:5000/hours/getHoursById/' + acct_id)
+    axios.get('http://localhost:5001/hours/getHoursById/' + acct_id)
     .then((res) => {
         setHoursList(res.data)
     })
@@ -68,7 +68,7 @@ const Mainpage = () => {
         }
             if (selectedID) {
                 const id = selectedID
-                axios.delete('http://localhost:5000/hours/deleteHours/' + id)
+                axios.delete('http://localhost:5001/hours/deleteHours/' + id)
                 .then((res) => res.data)
                 .then((data) => {
                     deleteHoursInAList(id)
@@ -106,7 +106,7 @@ const Mainpage = () => {
 
     setHoursList([...hoursList, data])
 
-    axios.post('http://localhost:5000/hours/addHours', data)
+    axios.post('http://localhost:5001/hours/addHours', data)
     .then((res) => res.data)
     .then((data) => {
         const message = data.message
@@ -214,7 +214,8 @@ const Mainpage = () => {
             setHoursList(newData)
         }
 
-        axios.post('http://localhost:5000/hours/updateHours', data)
+
+        axios.post('http://localhost:5001/hours/updateHours', data)
         .then((res) => res.data)
         .then((data) => {
             updateDataInVariable()

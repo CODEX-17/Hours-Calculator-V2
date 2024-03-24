@@ -1,0 +1,13 @@
+{
+  "name": "ls",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "client": "cd client-side && npm start",
+    "server": "cd server-side && npm start",
+    "dev": "concurrently \"npm run client\" \"npm run server\""
+  },
+  "author": "",
+  "license": "ISC"
+}
