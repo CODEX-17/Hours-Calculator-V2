@@ -44,8 +44,6 @@ router.post('/updateHours', (req, res) => {
     const afternoon_end = req.body.afternoon_end
     const query = 'UPDATE hours SET date=?, morning_start=?, morning_end=?, afternoon_start=?, afternoon_end=? WHERE id=?'
 
-    console.log(req.body)
-
     db.query(query, [date, morning_start, morning_end, afternoon_start, afternoon_end, id], (error, data, fields) => {
         if (error) {
             return res.status(404).send(error)

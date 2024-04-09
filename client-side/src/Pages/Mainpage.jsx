@@ -39,6 +39,9 @@ const Mainpage = () => {
   const [editmorningTimeEnd, seteditmorningTimeEnd] = useState('0:0')
   const [editafternoonTimeStart, seteditafternoonTimeStart] = useState('0:0')
   const [editafternoonTimeEnd, seteditafternoonTimeEnd] = useState('0:0')
+  
+  const [totalHoursTaken, setTotalHoursTaken] = useState(null)
+  const [totalHoursTakenAsString, setTotalHoursTakenAsString] = useState(null)
 
   
   const user = JSON.parse(localStorage.getItem('user'))
@@ -55,6 +58,7 @@ const Mainpage = () => {
   },[])
 
   useEffect( () => {
+    console.log('exe')
    generateAllHoursList()
   },[hoursList])
 
@@ -137,17 +141,56 @@ const Mainpage = () => {
         }
 
         const result = totalHoursComputation(timeList)
-        const [hours, minutes] = result.split(':')
-
-        if (parseInt(hours) === 0) {
-            return minutes + 'mins'
-        }else {
-            return hours + 'hrs and ' + minutes + 'mins'
+        if (result) {
+            const timeAsStringFormat = generateTimeAsString(result)
+            console.log(timeAsStringFormat)
+            setTotalHoursTakenAsString(timeAsStringFormat)
+            setTotalHoursTaken(result)
         }
+        
+
     }else {
         return '0:0'
     }
 
+  }
+
+  const generateTotalAllHoursList = () => {
+    let timeList = []
+
+    if (hoursList.length > 0) {
+        for (let i = 0; i < hoursList.length; i++) {
+            const morningTimeStart = hoursList[i].morning_start
+            const morningTimeEnd = hoursList[i].morning_end
+            const afternoonTimeStart = hoursList[i].afternoon_start
+            const afternoonTimeEnd = hoursList[i].afternoon_end
+
+            if (morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd) {
+                timeList.push(dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)) 
+            }
+        }
+
+        const result = totalHoursComputation(timeList)
+        if (result) {
+            const timeAsStringFormat = generateTimeAsString(result)
+            return timeAsStringFormat
+        }
+        
+    }else {
+        return '0:0'
+    }
+
+  }
+
+
+  const generateTimeAsString = (time) => {
+    const [hours, minutes] = time.split(':')
+    if (parseInt(hours) === 0) {
+        return minutes + 'mins'
+    }else {
+        return hours + 'hrs and ' + minutes + 'mins'
+    }
+    
   }
 
   const generateTodaysHours = () => {
@@ -230,6 +273,12 @@ const Mainpage = () => {
         
 
   }
+
+ const computeUnfullfilledTime = () => {
+    const totalHours = generateAllHoursList()
+    console.log(totalHours)
+    return totalHours
+ }
 
   return (
     <div className={style.container}>
@@ -359,7 +408,7 @@ const Mainpage = () => {
                 <div className={style.listView}>
                     {
                         hoursList.length > 0 ? (
-                            hoursList.map((data, index) => (
+                            hoursList.slice().reverse().map((data, index) => (
                                 <div className={style.card} key={index}>
                                     <div className='d-flex flex-column align-items-start' style={{ marginLeft: '20px' }}>
                                         <p>DATE</p>
@@ -405,20 +454,37 @@ const Mainpage = () => {
             <div className={style.dashboardStyle}>
                 <div className={style.dashHead}>
                     <p>TOTAL HOURS</p>
-                    <h1>{generateAllHoursList()}</h1>
+                    <h1>{generateTotalAllHoursList()}</h1>
                 </div>
                 <div className={style.dashBody}>
-                    <div className='d-flex flex-column align-items-center'>
+                    <div className='d-flex w-100 align-items-center justify-content-between mb-5'>
                         <div className='d-flex flex-column align-items-center'>
-                            <p>TODAY'S HOURS</p>
-                            <p style={{ fontSize: '8pt' }}>{formatDate(Date.now())}</p>
+                            <div className='d-flex flex-column align-items-center'>
+                                <p>TODAY'S HOURS</p>
+                                <p style={{ fontSize: '8pt' }}>{formatDate(Date.now())}</p>
+                            </div>
+                            <h1>{generateTodaysHours()}</h1>
                         </div>
-                        <h1>{generateTodaysHours()}</h1>
+                        <div className='d-flex flex-column align-items-center'>
+                            <p>TOTAL WEEK HOURS</p>
+                            <h1>100hrs</h1>
+                        </div>
                     </div>
-                    <div className='d-flex flex-column align-items-center'>
-                        <p>TOTAL WEEK HOURS</p>
-                        <h1>100hrs</h1>
+
+                    <div className='d-flex w-100 align-items-center justify-content-between mb-5'>
+                        <div className='d-flex flex-column align-items-center'>
+                            <div className='d-flex flex-column align-items-center'>
+                                <p>UNFULLFILL HOURS</p>
+                                <h1>{totalHoursTaken}</h1>
+                            </div>
+                            <h1>{generateTodaysHours()}</h1>
+                        </div>
+                        <div className='d-flex flex-column align-items-center'>
+                            <p>TOTAL WEEK HOURS</p>
+                            <h1>100hrs</h1>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
