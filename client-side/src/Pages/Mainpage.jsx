@@ -15,6 +15,7 @@ import convertTimeFormat from '../util/convertTimeFormat';
 import  Notification from '../Components/Notification';
 import convertTimeToRead from '../util/convertTimeToRead';
 import DeleteNotification from '../Components/DeleteNotification';
+import { IoIosPrint } from "react-icons/io";
 
 
 const Mainpage = () => {
@@ -275,9 +276,41 @@ const Mainpage = () => {
   }
 
  const computeUnfullfilledTime = () => {
-    const totalHours = generateAllHoursList()
-    console.log(totalHours)
-    return totalHours
+    if (totalHoursTaken) {
+        const transformValue = parseFloat(totalHoursTaken.replace(/:/g, "."))
+        const result = 500 - transformValue
+        const roundedValue = Math.round(result * 100) / 100
+        const [hours, minutes] = roundedValue.toString().split('.')
+        const convertTimeFormat = hours + ':' + minutes
+        const formattedAsString = generateTimeAsString(convertTimeFormat)
+        return formattedAsString
+    }else {
+        return '0:0'
+    }
+ }
+
+ const computeEstimateRemainingDays = () => {
+
+    const computeDays = (hours) => {
+        const value = parseInt(hours)
+        if (value > 8) {
+            return value / 8
+        }else {
+            return 1
+        }
+    }
+
+    const convertInToString = (hours) => {
+        let value = Math.ceil(hours)
+        return value + ' days'
+    }
+
+    if (totalHoursTaken) {
+        const transformValue = parseFloat(totalHoursTaken.replace(/:/g, "."))
+        const remainingHours = 500 - transformValue
+        const computedDays = computeDays(remainingHours)
+        return convertInToString(computedDays)
+    }
  }
 
   return (
@@ -309,7 +342,8 @@ const Mainpage = () => {
                     
                 </div>
                 <div className='d-flex gap-2 align-items-center'>
-                    <button onClick={() => setisShowAddTime(true)}>Add +</button>
+                    <button title='Add Time' onClick={() => setisShowAddTime(true)}>Add +</button>
+                    <button title='Print Weekly Report' onClick={() => navigate('/print')}>Print <IoIosPrint/></button>
                     <button onClick={() => navigate('/')}>Back</button>
                 </div>
                 
@@ -471,17 +505,16 @@ const Mainpage = () => {
                         </div>
                     </div>
 
-                    <div className='d-flex w-100 align-items-center justify-content-between mb-5'>
+                    <div className='d-flex flex-column w-100 align-items-center mb-5 gap-5'>
                         <div className='d-flex flex-column align-items-center'>
                             <div className='d-flex flex-column align-items-center'>
                                 <p>UNFULLFILL HOURS</p>
-                                <h1>{totalHoursTaken}</h1>
+                                <h1>{computeUnfullfilledTime()}</h1>
                             </div>
-                            <h1>{generateTodaysHours()}</h1>
                         </div>
                         <div className='d-flex flex-column align-items-center'>
-                            <p>TOTAL WEEK HOURS</p>
-                            <h1>100hrs</h1>
+                            <p>UNFULLFILL DAYS</p>
+                            <h1>{computeEstimateRemainingDays()}</h1>
                         </div>
                     </div>
                     
