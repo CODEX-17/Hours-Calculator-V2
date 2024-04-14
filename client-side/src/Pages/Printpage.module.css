@@ -1,8 +1,126 @@
+@font-face {
+    font-family: normal;
+    src: url('../assets/fonts/Century-Gothic.ttf');
+}
+
 .container {
     width: 100%;
     height: 100vh;
     padding: 2%;
+    font-family: normal;
 }
+
+.canvas {
+    width: 1008px;
+    height: 618px;
+    padding: 2%;
+    border: 1px solid black;
+}
+
 .header {
-    background-color: red;
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    border-bottom: 2px solid black;
 }
+
+#logo {
+    width: 150px;
+    height: 150px;
+    margin-left: 50px;
+}
+
+#textHeader {
+    height: 200px;
+    width: 600px;
+}
+
+.header p {
+    font-family: normal;
+    font-size: 1em;
+}
+
+#text1 {
+    font-weight: bolder;
+    font-size: 1.5em;
+}
+
+#text2 {
+    font-weight: bolder;
+    font-size: 1.5em;
+}
+
+.body {
+    font-size: 1.2em;
+}
+
+.table1 {
+    border: 1.5px solid black;
+    margin-top: 2%;
+}
+
+.table2,
+.table3,
+.table4 {
+    border: 1.5px solid black;
+    border-top: none;
+}
+
+.column1 {
+    display: flex;
+}
+
+.row1,
+.row3,
+.row5,
+.row7,
+.row9,
+.row11,
+.row13,
+.row15,
+.row21 {
+    text-align: center;
+    flex: 15%;
+    padding: 5px;
+    background-color: rgba(128, 128, 128, 0.285);
+    border: 1px solid black;
+}
+
+.row2,
+.row4,
+.row8,
+.row10,
+.row12,
+.row14,
+.row22
+{
+    text-align: center;
+    flex: 35%;
+    padding: 5px;
+    font-weight: bolder;
+    border: 1px solid black;
+}
+
+.row6,
+.row16 {
+    text-align: center;
+    flex: 5%;
+    padding: 5px;
+    border: 1px solid black;
+}
+
+.row17, .row19 {
+    text-align: center;
+    flex: 8%;
+    padding: 5px;
+    background-color: rgba(128, 128, 128, 0.285);
+    border: 1px solid black;
+}
+
+.row18, .row20 {
+    text-align: center;
+    flex: 12%;
+    padding: 5px;
+    border: 1px solid black;
+}
+
