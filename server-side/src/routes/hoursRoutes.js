@@ -35,14 +35,13 @@ router.post('/addHours', (req, res) => {
 })
 
 router.post('/updateHours', (req, res) => {
-    const value = req.body
-
-    const id = value.id
-    const date = value.date
-    const morning_start = value.morning_start
-    const morning_end = value.morning_end
-    const afternoon_start = value.afternoon_start
-    const afternoon_end = value.afternoon_end
+    console.log(req.body)
+    const id = req.body.id
+    const date = req.body.date
+    const morning_start = req.body.morning_start
+    const morning_end = req.body.morning_end
+    const afternoon_start = req.body.afternoon_start
+    const afternoon_end = req.body.afternoon_end
     const query = 'UPDATE hours SET date=?, morning_start=?, morning_end=?, afternoon_start=?, afternoon_end=? WHERE id=?'
 
     db.query(query, [date, morning_start, morning_end, afternoon_start, afternoon_end, id], (error, data, fields) => {

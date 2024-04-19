@@ -16,7 +16,7 @@ const Homepage = () => {
    const [isShowSplashScreen, setShowSplashScreen] = useState(true)
    const [isShowCreateProfile, setShowCreateProfile] = useState(false)
    const [isShowNotification, setShowNotification] = useState(true)
-   const [usernameList, setUsernameList] = useState(null)
+   const [usernameList, setUsernameList] = useState([])
 
    const [errorMessage, seterrorMessage] = useState('maximum of 12 character.')
 
@@ -31,11 +31,11 @@ const Homepage = () => {
 
    useEffect(() => {
 
-    axios.get('http://localhost:5000/accounts/getAccounts')
+    axios.get('http://localhost:5001/accounts/getAccounts')
     .then((res) => {
         const data = res.data
         if (res.data) {
-            setUsernameList(res.data)
+            setUsernameList(data)
         }
     })
     .catch((err) => console.error(err))
@@ -55,15 +55,19 @@ const Homepage = () => {
             acct_id,
             username,
         }
-        setUsername([...username], data)
+        console.log(data)
+        setUsernameList([...usernameList, data])
         if (username) {
-            axios.post('http://localhost:5000/accounts/addAccounts', data)
+            axios.post('http://localhost:5001/accounts/addAccounts', data )
             .then((res) => res.data)
             .then((data) => {
-                sound.play()
-                updateMessage(data.message)
-                updateGood(true)
-                updateNotification(true)
+                if (data.message) {
+                    sound.play()
+                    updateMessage(data.message)
+                    updateGood(true)
+                    updateNotification(true)
+                    setShowCreateProfile(false)
+                }
             })
             .catch((err) => console.error(err))
         }else {
@@ -88,9 +92,13 @@ const Homepage = () => {
         if (usernameList) {
             for (let i = 0; i < usernameList.length; i++) {
                 if (data === usernameList[i].username) {
+                    console.log(data + ' and ' + usernameList[i].username)
                     inputRef.current.style.color  = 'red'
                     seterrorMessage('username is already taken.')
+                    setUsername(null)
+                    break
                 }else {
+                    setUsername(data)
                     inputRef.current.style.color  = 'black'
                     seterrorMessage('maximum of 12 character.')
                 }
@@ -129,7 +137,7 @@ const Homepage = () => {
                             <h2>PROFILE</h2>
                             <div className={style.profileList}>
                                 {
-                                    usernameList &&
+                                    usernameList.length > 0 &&
                                     usernameList.map((data, index) => (
                                         <div key={index} className='d-flex flex-column gap-2 align-items-center justify-content-center'>
                                             <div className={style.cardProfile} onClick={() => {

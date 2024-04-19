@@ -25,7 +25,7 @@ app.use('/hours', hoursRoutes)
 
 const server = http.createServer(app)
 
-const port = process.env.PORT || 5000
+const port = process.env.PORT || 5001
 
 server.listen(port, ()=> {
     console.log('Listening to port: ', port)

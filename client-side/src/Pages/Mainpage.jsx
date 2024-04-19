@@ -15,6 +15,7 @@ import convertTimeFormat from '../util/convertTimeFormat';
 import  Notification from '../Components/Notification';
 import convertTimeToRead from '../util/convertTimeToRead';
 import DeleteNotification from '../Components/DeleteNotification';
+import { IoIosPrint } from "react-icons/io";
 
 
 const Mainpage = () => {
@@ -39,6 +40,9 @@ const Mainpage = () => {
   const [editmorningTimeEnd, seteditmorningTimeEnd] = useState('0:0')
   const [editafternoonTimeStart, seteditafternoonTimeStart] = useState('0:0')
   const [editafternoonTimeEnd, seteditafternoonTimeEnd] = useState('0:0')
+  
+  const [totalHoursTaken, setTotalHoursTaken] = useState(null)
+  const [totalHoursTakenAsString, setTotalHoursTakenAsString] = useState(null)
 
   
   const user = JSON.parse(localStorage.getItem('user'))
@@ -46,7 +50,7 @@ const Mainpage = () => {
   useEffect(() => {
 
     const acct_id = user.acct_id
-    axios.get('http://localhost:5000/hours/getHoursById/' + acct_id)
+    axios.get('http://localhost:5001/hours/getHoursById/' + acct_id)
     .then((res) => {
         setHoursList(res.data)
     })
@@ -55,6 +59,7 @@ const Mainpage = () => {
   },[])
 
   useEffect( () => {
+    console.log('exe')
    generateAllHoursList()
   },[hoursList])
 
@@ -68,7 +73,7 @@ const Mainpage = () => {
         }
             if (selectedID) {
                 const id = selectedID
-                axios.delete('http://localhost:5000/hours/deleteHours/' + id)
+                axios.delete('http://localhost:5001/hours/deleteHours/' + id)
                 .then((res) => res.data)
                 .then((data) => {
                     deleteHoursInAList(id)
@@ -106,7 +111,7 @@ const Mainpage = () => {
 
     setHoursList([...hoursList, data])
 
-    axios.post('http://localhost:5000/hours/addHours', data)
+    axios.post('http://localhost:5001/hours/addHours', data)
     .then((res) => res.data)
     .then((data) => {
         const message = data.message
@@ -137,17 +142,56 @@ const Mainpage = () => {
         }
 
         const result = totalHoursComputation(timeList)
-        const [hours, minutes] = result.split(':')
-
-        if (parseInt(hours) === 0) {
-            return minutes + 'mins'
-        }else {
-            return hours + 'hrs and ' + minutes + 'mins'
+        if (result) {
+            const timeAsStringFormat = generateTimeAsString(result)
+            console.log(timeAsStringFormat)
+            setTotalHoursTakenAsString(timeAsStringFormat)
+            setTotalHoursTaken(result)
         }
+        
+
     }else {
         return '0:0'
     }
 
+  }
+
+  const generateTotalAllHoursList = () => {
+    let timeList = []
+
+    if (hoursList.length > 0) {
+        for (let i = 0; i < hoursList.length; i++) {
+            const morningTimeStart = hoursList[i].morning_start
+            const morningTimeEnd = hoursList[i].morning_end
+            const afternoonTimeStart = hoursList[i].afternoon_start
+            const afternoonTimeEnd = hoursList[i].afternoon_end
+
+            if (morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd) {
+                timeList.push(dayComputation(morningTimeStart, morningTimeEnd, afternoonTimeStart, afternoonTimeEnd)) 
+            }
+        }
+
+        const result = totalHoursComputation(timeList)
+        if (result) {
+            const timeAsStringFormat = generateTimeAsString(result)
+            return timeAsStringFormat
+        }
+        
+    }else {
+        return '0:0'
+    }
+
+  }
+
+
+  const generateTimeAsString = (time) => {
+    const [hours, minutes] = time.split(':')
+    if (parseInt(hours) === 0) {
+        return minutes + 'mins'
+    }else {
+        return hours + 'hrs and ' + minutes + 'mins'
+    }
+    
   }
 
   const generateTodaysHours = () => {
@@ -214,7 +258,8 @@ const Mainpage = () => {
             setHoursList(newData)
         }
 
-        axios.post('http://localhost:5000/hours/updateHours', data)
+
+        axios.post('http://localhost:5001/hours/updateHours', data)
         .then((res) => res.data)
         .then((data) => {
             updateDataInVariable()
@@ -229,6 +274,44 @@ const Mainpage = () => {
         
 
   }
+
+ const computeUnfullfilledTime = () => {
+    if (totalHoursTaken) {
+        const transformValue = parseFloat(totalHoursTaken.replace(/:/g, "."))
+        const result = 500 - transformValue
+        const roundedValue = Math.round(result * 100) / 100
+        const [hours, minutes] = roundedValue.toString().split('.')
+        const convertTimeFormat = hours + ':' + minutes
+        const formattedAsString = generateTimeAsString(convertTimeFormat)
+        return formattedAsString
+    }else {
+        return '0:0'
+    }
+ }
+
+ const computeEstimateRemainingDays = () => {
+
+    const computeDays = (hours) => {
+        const value = parseInt(hours)
+        if (value > 8) {
+            return value / 8
+        }else {
+            return 1
+        }
+    }
+
+    const convertInToString = (hours) => {
+        let value = Math.ceil(hours)
+        return value + ' days'
+    }
+
+    if (totalHoursTaken) {
+        const transformValue = parseFloat(totalHoursTaken.replace(/:/g, "."))
+        const remainingHours = 500 - transformValue
+        const computedDays = computeDays(remainingHours)
+        return convertInToString(computedDays)
+    }
+ }
 
   return (
     <div className={style.container}>
@@ -259,7 +342,8 @@ const Mainpage = () => {
                     
                 </div>
                 <div className='d-flex gap-2 align-items-center'>
-                    <button onClick={() => setisShowAddTime(true)}>Add +</button>
+                    <button title='Add Time' onClick={() => setisShowAddTime(true)}>Add +</button>
+                    <button title='Print Weekly Report' onClick={() => navigate('/print')}>Print <IoIosPrint/></button>
                     <button onClick={() => navigate('/')}>Back</button>
                 </div>
                 
@@ -358,7 +442,7 @@ const Mainpage = () => {
                 <div className={style.listView}>
                     {
                         hoursList.length > 0 ? (
-                            hoursList.map((data, index) => (
+                            hoursList.slice().reverse().map((data, index) => (
                                 <div className={style.card} key={index}>
                                     <div className='d-flex flex-column align-items-start' style={{ marginLeft: '20px' }}>
                                         <p>DATE</p>
@@ -404,20 +488,36 @@ const Mainpage = () => {
             <div className={style.dashboardStyle}>
                 <div className={style.dashHead}>
                     <p>TOTAL HOURS</p>
-                    <h1>{generateAllHoursList()}</h1>
+                    <h1>{generateTotalAllHoursList()}</h1>
                 </div>
                 <div className={style.dashBody}>
-                    <div className='d-flex flex-column align-items-center'>
+                    <div className='d-flex w-100 align-items-center justify-content-between mb-5'>
                         <div className='d-flex flex-column align-items-center'>
-                            <p>TODAY'S HOURS</p>
-                            <p style={{ fontSize: '8pt' }}>{formatDate(Date.now())}</p>
+                            <div className='d-flex flex-column align-items-center'>
+                                <p>TODAY'S HOURS</p>
+                                <p style={{ fontSize: '8pt' }}>{formatDate(Date.now())}</p>
+                            </div>
+                            <h1>{generateTodaysHours()}</h1>
                         </div>
-                        <h1>{generateTodaysHours()}</h1>
+                        <div className='d-flex flex-column align-items-center'>
+                            <p>TOTAL WEEK HOURS</p>
+                            <h1>100hrs</h1>
+                        </div>
                     </div>
-                    <div className='d-flex flex-column align-items-center'>
-                        <p>TOTAL WEEK HOURS</p>
-                        <h1>100hrs</h1>
+
+                    <div className='d-flex flex-column w-100 align-items-center mb-5 gap-5'>
+                        <div className='d-flex flex-column align-items-center'>
+                            <div className='d-flex flex-column align-items-center'>
+                                <p>UNFULLFILL HOURS</p>
+                                <h1>{computeUnfullfilledTime()}</h1>
+                            </div>
+                        </div>
+                        <div className='d-flex flex-column align-items-center'>
+                            <p>UNFULLFILL DAYS</p>
+                            <h1>{computeEstimateRemainingDays()}</h1>
+                        </div>
                     </div>
+                    
                 </div>
             </div>
         </div>
