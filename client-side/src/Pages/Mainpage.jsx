@@ -59,7 +59,6 @@ const Mainpage = () => {
   },[])
 
   useEffect( () => {
-    console.log('exe')
    generateAllHoursList()
   },[hoursList])
 
@@ -144,7 +143,6 @@ const Mainpage = () => {
         const result = totalHoursComputation(timeList)
         if (result) {
             const timeAsStringFormat = generateTimeAsString(result)
-            console.log(timeAsStringFormat)
             setTotalHoursTakenAsString(timeAsStringFormat)
             setTotalHoursTaken(result)
         }
@@ -216,15 +214,15 @@ const Mainpage = () => {
     
   }
 
-  const handleEditTime = (id) => {
-    if (hoursList) {
-        const data = hoursList.filter((data) => data.id === id)
-        setEditID(data[0].id)
-        seteditDate(data[0].date)
-        seteditmorningTimeStart(data[0].morning_start)
-        seteditmorningTimeEnd(data[0].morning_end)
-        seteditafternoonTimeStart(data[0].afternoon_start)
-        seteditafternoonTimeEnd(data[0].afternoon_end)
+  const handleEditTime = (data) => {
+
+    if (data) {
+        setEditID(data.id)
+        seteditDate(data.date)
+        seteditmorningTimeStart(data.morning_start)
+        seteditmorningTimeEnd(data.morning_end)
+        seteditafternoonTimeStart(data.afternoon_start)
+        seteditafternoonTimeEnd(data.afternoon_end)
         setisShowEditTime(true)
     }
   }
@@ -240,6 +238,8 @@ const Mainpage = () => {
             afternoon_start: editafternoonTimeStart,
             afternoon_end: editafternoonTimeEnd,
         }
+
+        console.log(data)
 
         const updateDataInVariable = () => {
 
@@ -271,7 +271,6 @@ const Mainpage = () => {
         })
         .catch((err) => console.log(err))
 
-        
 
   }
 
@@ -470,7 +469,7 @@ const Mainpage = () => {
                                         </div>
                                     </div>
                                     <div className='d-flex gap-2 align-items-center' style={{ marginRight: '20px' }}>
-                                        <FaRegEdit size={20} cursor={'pointer'} title='edit' onClick={() => handleEditTime(data.id)}/>
+                                        <FaRegEdit size={20} cursor={'pointer'} title='edit' onClick={() => handleEditTime(data)}/>
                                         <MdOutlineDelete size={22} cursor={'pointer'} title='delete' onClick={() => handleDeleteHours(data.id)}/>
                                     </div>
                                 </div>
