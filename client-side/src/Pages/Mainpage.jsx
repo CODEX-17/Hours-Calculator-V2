@@ -56,7 +56,7 @@ const Mainpage = () => {
     })
     .catch((err) => console.log(err))
 
-  },[])
+  },[hoursList])
 
   useEffect( () => {
    generateAllHoursList()
@@ -239,9 +239,14 @@ const Mainpage = () => {
             afternoon_end: editafternoonTimeEnd,
         }
 
-        console.log(data)
-
-        const updateDataInVariable = () => {
+        axios.post('http://localhost:5001/hours/updateHours', data)
+        .then((res) => res.data)
+        .then((data) => {
+            const message = data.message
+            updateMessage(message)
+            updateGood(true)
+            updateNotification(true)
+            setisShowEditTime(false)
 
             let newData = hoursList
 
@@ -256,18 +261,7 @@ const Mainpage = () => {
             }
 
             setHoursList(newData)
-        }
 
-
-        axios.post('http://localhost:5001/hours/updateHours', data)
-        .then((res) => res.data)
-        .then((data) => {
-            updateDataInVariable()
-            const message = data.message
-            updateMessage(message)
-            updateGood(true)
-            updateNotification(true)
-            setisShowEditTime(false)
         })
         .catch((err) => console.log(err))
 
