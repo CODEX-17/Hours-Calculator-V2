@@ -273,10 +273,16 @@ const Mainpage = () => {
         const transformValue = parseFloat(totalHoursTaken.replace(/:/g, "."))
         const result = 500 - transformValue
         const roundedValue = Math.round(result * 100) / 100
-        const [hours, minutes] = roundedValue.toString().split('.')
-        const convertTimeFormat = hours + ':' + minutes
-        const formattedAsString = generateTimeAsString(convertTimeFormat)
-        return formattedAsString
+        if (roundedValue % 1 !== 0) {
+            const [hours, minutes] = roundedValue.toString().split('.')
+            const convertTimeFormat = hours + ':' + minutes
+            const formattedAsString = generateTimeAsString(convertTimeFormat)   
+            return formattedAsString
+        }else {
+            return roundedValue + ' hours'
+        }
+        
+     
     }else {
         return '0:0'
     }
